@@ -7,6 +7,10 @@ public class TicketPool {
     private int availableTickets;
     private int version;
 
+    public TicketPool() {
+
+    }
+
     public TicketPool(Long id, int availableTickets, String ticketType, Long eventId, int version) {
         this.id = id;
         this.availableTickets = availableTickets;
