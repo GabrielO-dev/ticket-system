@@ -7,6 +7,10 @@ public class Event {
     private String name;
     private LocalDateTime eventDate;
 
+    public Event() {
+
+    }
+
     public Event(Long id, String name, LocalDateTime eventDate) {
         this.id = id;
         this.name = name;
