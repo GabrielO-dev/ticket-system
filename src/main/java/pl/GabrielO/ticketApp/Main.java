@@ -1,37 +1,29 @@
 package pl.GabrielO.ticketApp;
 
-import pl.GabrielO.ticketApp.dao.EventDao;
-import pl.GabrielO.ticketApp.dao.TicketPoolDao;
-import pl.GabrielO.ticketApp.model.Event;
-import pl.GabrielO.ticketApp.model.TicketPool;
+import pl.GabrielO.ticketApp.dao.ReservationDao;
+import pl.GabrielO.ticketApp.model.Reservation;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        EventDao eventDao = new EventDao();
-        TicketPoolDao ticketPoolDao = new TicketPoolDao();
+        ReservationDao reservationDao = new ReservationDao();
 
-        Event event = new Event();
-        event.setName("Koncert rockowy");
-        event.setEventDate(LocalDateTime.of(2026, 11, 20, 19, 0));
-        eventDao.save(event);
+        System.out.println("Tworzenie nowej rezerwacji...");
 
-        Long generatedEventId = event.getId();
+        Reservation newReservation = new Reservation();
+        newReservation.setEventId(2L);
+        newReservation.setCustomerName("Jan Kowalski");
+        newReservation.setTicketType("VIP");
+        newReservation.setReservationTime(LocalDateTime.now());
 
-        TicketPool standardPool = new TicketPool(null, 500, "STANDARD", generatedEventId, 0);
-        TicketPool vipPool = new TicketPool(null, 50, "VIP", generatedEventId, 0);
+        reservationDao.save(newReservation);
 
-        System.out.println("\nZapisywanie biletów do bazy...");
-        ticketPoolDao.save(standardPool);
-        ticketPoolDao.save(vipPool);
-
-        System.out.println("\nPobieranie dostępnych biletów dla koncertu ID " + generatedEventId + ":");
-        List<TicketPool> availablePools = ticketPoolDao.getPoolsForEvent(generatedEventId);
-
-        for (TicketPool pool : availablePools) {
-            System.out.println("- Typ: " + pool.getTicketType() + ", Dostępnych: " + pool.getAvailableTickets() + " (Wersja: " + pool.getVersion() + ")");
+        System.out.println("\nLista rezerwacji dla tego koncertu:");
+        List<Reservation> reservations = reservationDao.getReservationsForEvent(2L);
+        for (Reservation r : reservations) {
+            System.out.println("- Klient: " + r.getCustomerName() + " | Typ: " + r.getTicketType() + " | Data kupna: " + r.getReservationTime());
         }
     }
 }
