@@ -67,4 +67,28 @@ public class TicketPoolDao {
 
         return pools;
     }
+
+    public boolean updatePool(TicketPool pool) {
+        String sql = "UPDATE ticket_pools SET available_tickets = ?, version = version + 1 WHERE id = ? AND version = ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, pool.getAvailableTickets());
+            pstmt.setLong(2, pool.getId());
+            pstmt.setInt(3, pool.getVersion());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows > 0) {
+                pool.setVersion(pool.getVersion() + 1);
+                return true;
+            }
+        } catch (SQLException e) {
+            System.err.println("Błąd podczas aktualizacji puli biletów!");
+            e.printStackTrace();
+        }
+
+        return false;
+    }
 }

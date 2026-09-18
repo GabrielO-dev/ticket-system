@@ -1,29 +1,25 @@
 package pl.GabrielO.ticketApp;
 
-import pl.GabrielO.ticketApp.dao.ReservationDao;
-import pl.GabrielO.ticketApp.model.Reservation;
-
-import java.time.LocalDateTime;
-import java.util.List;
+import pl.GabrielO.ticketApp.exception.TicketBookingException;
+import pl.GabrielO.ticketApp.service.TicketBookingService;
 
 public class Main {
     public static void main(String[] args) {
-        ReservationDao reservationDao = new ReservationDao();
+        TicketBookingService ticketBookingService = new TicketBookingService();
 
-        System.out.println("Tworzenie nowej rezerwacji...");
+        Long eventId = 2L;
 
-        Reservation newReservation = new Reservation();
-        newReservation.setEventId(2L);
-        newReservation.setCustomerName("Jan Kowalski");
-        newReservation.setTicketType("VIP");
-        newReservation.setReservationTime(LocalDateTime.now());
+        try {
+            System.out.println("Test 1: Prawidłowy zakup...");
+            ticketBookingService.bookTicket(eventId, "VIP", "Anna Nowak");
 
-        reservationDao.save(newReservation);
+            System.out.println("Test 2: Próba zakupu nieistniejącego typu biletu...");
+            ticketBookingService.bookTicket(eventId, "PREMIUM", "Tomasz Kot");
 
-        System.out.println("\nLista rezerwacji dla tego koncertu:");
-        List<Reservation> reservations = reservationDao.getReservationsForEvent(2L);
-        for (Reservation r : reservations) {
-            System.out.println("- Klient: " + r.getCustomerName() + " | Typ: " + r.getTicketType() + " | Data kupna: " + r.getReservationTime());
+            System.out.println("To się nie powinno wyświetlić.");
+
+        } catch (TicketBookingException e) {
+            System.err.println("PRZECHWYCONO BŁĄD BIZNESOWY: " + e.getMessage());
         }
     }
 }
