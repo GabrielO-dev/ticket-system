@@ -9,6 +9,8 @@ public class Reservation {
     private String ticketType;
     private LocalDateTime reservationTime;
 
+    public Reservation() {}
+
     public Reservation(Long id, Long eventId, String ticketType, String customerName, LocalDateTime reservationTime) {
         this.id = id;
         this.eventId = eventId;
