@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formularz Rezerwacji</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
+        .container { max-width: 500px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
+        button { background-color: #2ecc71; color: white; border: none; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Dane rezerwacji</h2>
+    <form th:action="@{/book}" th:object="${bookingRequest}" method="post">
+
+        <input type="hidden" th:field="*{eventId}" />
+
+        <label>Imię i nazwisko:</label>
+        <input type="text" th:field="*{customerName}" required />
+
+        <label>Typ biletu:</label>
+        <select th:field="*{ticketType}" required>
+            <option th:if="${#lists.isEmpty(availablePools)}" value="" disabled selected>Brak biletów na to wydarzenie</option>
+
+            <option th:each="pool : ${availablePools}"
+                    th:value="${pool.ticketType}"
+                    th:text="${pool.ticketType} + ' (Dostępnych: ' + ${pool.availableTickets} + ')'">
+            </option>
+        </select>
+
+        <button type="submit">Potwierdź rezerwację</button>
+    </form>
+</div>
+</body>
+</html>
