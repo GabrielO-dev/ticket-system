@@ -1,5 +1,6 @@
 package pl.GabrielO.ticketApp.service;
 
+import org.springframework.stereotype.Service;
 import pl.GabrielO.ticketApp.dao.ReservationDao;
 import pl.GabrielO.ticketApp.dao.TicketPoolDao;
 import pl.GabrielO.ticketApp.exception.TicketBookingException;
@@ -9,13 +10,18 @@ import pl.GabrielO.ticketApp.model.TicketPool;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Service
 public class TicketBookingService {
-    private final TicketPoolDao ticketPoolDao = new TicketPoolDao();
-    private final ReservationDao reservationDao = new ReservationDao();
+
+    private final TicketPoolDao ticketPoolDao;
+    private final ReservationDao reservationDao;
+
+    public TicketBookingService(TicketPoolDao ticketPoolDao, ReservationDao reservationDao) {
+        this.ticketPoolDao = ticketPoolDao;
+        this.reservationDao = reservationDao;
+    }
 
     public void bookTicket(Long eventId, String ticketType, String customerName) {
-        System.out.println("--- Próba zakupu biletu " + ticketType + " dla " + customerName + " ---");
-
         List<TicketPool> pools = ticketPoolDao.getPoolsForEvent(eventId);
 
         TicketPool targetPool = null;
@@ -35,7 +41,6 @@ public class TicketBookingService {
         }
 
         targetPool.setAvailableTickets(targetPool.getAvailableTickets() - 1);
-
         boolean isUpdated = ticketPoolDao.updatePool(targetPool);
 
         if (!isUpdated) {
@@ -49,6 +54,5 @@ public class TicketBookingService {
         reservation.setReservationTime(LocalDateTime.now());
 
         reservationDao.save(reservation);
-        System.out.println("SUKCES: Zarezerwowano bilet! Pozostało " + targetPool.getAvailableTickets() + " biletów w tej puli.\n");
     }
 }

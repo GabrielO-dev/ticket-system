@@ -1,17 +1,26 @@
 package pl.GabrielO.ticketApp.dao;
 
+import org.springframework.stereotype.Repository;
 import pl.GabrielO.ticketApp.model.Reservation;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ReservationDao {
+
+    private final DataSource dataSource;
+
+    public ReservationDao(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public void save(Reservation reservation) {
         String sql = "INSERT INTO reservations (event_id, customer_name, ticket_type, reservation_time) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setLong(1, reservation.getEventId());
@@ -27,12 +36,9 @@ public class ReservationDao {
                         reservation.setId(generatedKeys.getLong(1));
                     }
                 }
-                System.out.println("Sukces: Zapisano rezerwację dla klienta '" + reservation.getCustomerName() +
-                        "' (Bilet: " + reservation.getTicketType() + ")");
             }
 
         } catch (SQLException e) {
-            System.err.println("Błąd podczas zapisywania rezerwacji!");
             e.printStackTrace();
         }
     }
@@ -41,27 +47,25 @@ public class ReservationDao {
         List<Reservation> reservations = new ArrayList<>();
         String sql = "SELECT * FROM reservations WHERE event_id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, eventId);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
-                    Reservation res = new Reservation();
+                    Reservation reservation = new Reservation();
+                    reservation.setId(rs.getLong("id"));
+                    reservation.setEventId(rs.getLong("event_id"));
+                    reservation.setCustomerName(rs.getString("customer_name"));
+                    reservation.setTicketType(rs.getString("ticket_type"));
+                    reservation.setReservationTime(rs.getTimestamp("reservation_time").toLocalDateTime());
 
-                    res.setId(rs.getLong("id"));
-                    res.setEventId(rs.getLong("event_id"));
-                    res.setCustomerName(rs.getString("customer_name"));
-                    res.setTicketType(rs.getString("ticket_type"));
-                    res.setReservationTime(rs.getTimestamp("reservation_time").toLocalDateTime());
-
-                    reservations.add(res);
+                    reservations.add(reservation);
                 }
             }
 
         } catch (SQLException e) {
-            System.err.println("Błąd podczas pobierania list rezerwacji!");
             e.printStackTrace();
         }
 

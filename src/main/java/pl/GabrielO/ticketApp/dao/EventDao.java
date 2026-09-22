@@ -1,17 +1,26 @@
 package pl.GabrielO.ticketApp.dao;
 
+import org.springframework.stereotype.Repository;
 import pl.GabrielO.ticketApp.model.Event;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class EventDao {
+
+    private final DataSource dataSource;
+
+    public EventDao(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public void save(Event event) {
         String sql = "INSERT INTO events (name, event_date) VALUES (?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setString(1, event.getName());
@@ -25,11 +34,9 @@ public class EventDao {
                         event.setId(generatedKeys.getLong(1));
                     }
                 }
-                System.out.println("Zapisano wydarzenie: " + event.getName() + " (ID: " + event.getId() + ")");
             }
 
         } catch (SQLException e) {
-            System.err.println("Błąd podczas zapisywania wydarzenia do bazy!");
             e.printStackTrace();
         }
     }
@@ -38,7 +45,7 @@ public class EventDao {
         List<Event> events = new ArrayList<>();
         String sql = "SELECT * FROM events";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dataSource.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -51,7 +58,6 @@ public class EventDao {
                 events.add(event);
             }
         } catch (SQLException e) {
-            System.err.println("Błąd podczas pobierania wydarzeń z bazy!");
             e.printStackTrace();
         }
 

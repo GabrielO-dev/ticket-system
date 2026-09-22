@@ -1,17 +1,26 @@
 package pl.GabrielO.ticketApp.dao;
 
+import org.springframework.stereotype.Repository;
 import pl.GabrielO.ticketApp.model.TicketPool;
 
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class TicketPoolDao {
+
+    private final DataSource dataSource;
+
+    public TicketPoolDao(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 
     public void save(TicketPool pool) {
         String sql = "INSERT INTO ticket_pools (event_id, ticket_type, available_tickets, version) VALUES (?, ?, ?, ?)";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setLong(1, pool.getEventId());
@@ -27,13 +36,8 @@ public class TicketPoolDao {
                         pool.setId(generatedKeys.getLong(1));
                     }
                 }
-
-                System.out.println("Utworzono pulę biletów: " + pool.getTicketType() +
-                        " (" + pool.getAvailableTickets() + " sztuk) dla wydarzenia ID: " + pool.getEventId());
             }
-
         } catch (SQLException e) {
-            System.err.println("Błąd podczas zapisywania puli biletów do bazy!");
             e.printStackTrace();
         }
     }
@@ -42,7 +46,7 @@ public class TicketPoolDao {
         List<TicketPool> pools = new ArrayList<>();
         String sql = "SELECT * FROM ticket_pools WHERE event_id = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setLong(1, eventId);
@@ -59,19 +63,16 @@ public class TicketPoolDao {
                     pools.add(pool);
                 }
             }
-
         } catch (SQLException e) {
-            System.err.println("Błąd podczas pobierania puli biletów!");
             e.printStackTrace();
         }
-
         return pools;
     }
 
     public boolean updatePool(TicketPool pool) {
         String sql = "UPDATE ticket_pools SET available_tickets = ?, version = version + 1 WHERE id = ? AND version = ?";
 
-        try (Connection conn = DatabaseConnection.getConnection();
+        try (Connection conn = dataSource.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, pool.getAvailableTickets());
@@ -85,7 +86,6 @@ public class TicketPoolDao {
                 return true;
             }
         } catch (SQLException e) {
-            System.err.println("Błąd podczas aktualizacji puli biletów!");
             e.printStackTrace();
         }
 
