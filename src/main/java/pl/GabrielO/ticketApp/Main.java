@@ -1,16 +1,11 @@
 package pl.GabrielO.ticketApp;
 
-import pl.GabrielO.ticketApp.ui.MainWindow;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.swing.*;
-
+@SpringBootApplication
 public class Main {
     public static void main(String[] args) {
-
-        SwingUtilities.invokeLater( () -> {
-            MainWindow window = new MainWindow();
-            window.setVisible(true);
-
-        });
+        SpringApplication.run(Main.class, args);
     }
 }
