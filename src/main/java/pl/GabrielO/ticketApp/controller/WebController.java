@@ -1,5 +1,7 @@
 package pl.GabrielO.ticketApp.controller;
 
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +43,12 @@ public class WebController {
     }
 
     @PostMapping("/book")
-    public String processBooking(@ModelAttribute BookingRequest bookingRequest, Model model) {
+    public String processBooking(@Valid @ModelAttribute BookingRequest bookingRequest, BindingResult bindingResult, Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("availablePools", ticketPoolDao.getPoolsForEvent(bookingRequest.getEventId()));
+            return "book";
+        }
+
         try {
             BigDecimal price = bookingService.bookTicket(bookingRequest.getEventId(), bookingRequest.getTicketType(), bookingRequest.getCustomerName());
             model.addAttribute("message", "✅ SUKCES: Zarezerwowano bilet " + bookingRequest.getTicketType() + " dla " + bookingRequest.getCustomerName() + ". Do zapłaty: " + price + " PLN.");
