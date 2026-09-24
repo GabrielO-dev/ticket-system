@@ -59,6 +59,7 @@ public class TicketPoolDao {
                     pool.setTicketType(rs.getString("ticket_type"));
                     pool.setAvailableTickets(rs.getInt("available_tickets"));
                     pool.setVersion(rs.getInt("version"));
+                    pool.setPrice(rs.getBigDecimal("price"));
 
                     pools.add(pool);
                 }

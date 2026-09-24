@@ -1,11 +1,14 @@
 package pl.GabrielO.ticketApp.model;
 
+import java.math.BigDecimal;
+
 public class TicketPool {
     private Long id;
     private Long eventId;
     private String ticketType;
     private int availableTickets;
     private int version;
+    private BigDecimal price;
 
     public TicketPool() {
 
@@ -39,6 +42,8 @@ public class TicketPool {
         return version;
     }
 
+    public BigDecimal getPrice() {return price;}
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -58,4 +63,6 @@ public class TicketPool {
     public void setVersion(int version) {
         this.version = version;
     }
+
+    public void setPrice(BigDecimal price) {this.price = price;}
 }

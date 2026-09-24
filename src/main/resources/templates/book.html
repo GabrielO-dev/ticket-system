@@ -26,7 +26,7 @@
 
             <option th:each="pool : ${availablePools}"
                     th:value="${pool.ticketType}"
-                    th:text="${pool.ticketType} + ' (Dostępnych: ' + ${pool.availableTickets} + ')'">
+                    th:text="${pool.ticketType} + ' - ' + ${pool.price} + ' PLN (Dostępnych: ' + ${pool.availableTickets} + ')'">
             </option>
         </select>
 

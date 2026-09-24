@@ -7,6 +7,7 @@ import pl.GabrielO.ticketApp.exception.TicketBookingException;
 import pl.GabrielO.ticketApp.model.Reservation;
 import pl.GabrielO.ticketApp.model.TicketPool;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class TicketBookingService {
         this.reservationDao = reservationDao;
     }
 
-    public void bookTicket(Long eventId, String ticketType, String customerName) {
+    public BigDecimal bookTicket(Long eventId, String ticketType, String customerName) {
         List<TicketPool> pools = ticketPoolDao.getPoolsForEvent(eventId);
 
         TicketPool targetPool = null;
@@ -54,5 +55,6 @@ public class TicketBookingService {
         reservation.setReservationTime(LocalDateTime.now());
 
         reservationDao.save(reservation);
+        return targetPool.getPrice();
     }
 }

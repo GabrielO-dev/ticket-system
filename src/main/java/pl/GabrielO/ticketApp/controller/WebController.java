@@ -8,6 +8,8 @@ import pl.GabrielO.ticketApp.dao.TicketPoolDao;
 import pl.GabrielO.ticketApp.dto.BookingRequest;
 import pl.GabrielO.ticketApp.service.TicketBookingService;
 
+import java.math.BigDecimal;
+
 @Controller
 public class WebController {
 
@@ -41,8 +43,8 @@ public class WebController {
     @PostMapping("/book")
     public String processBooking(@ModelAttribute BookingRequest bookingRequest, Model model) {
         try {
-            bookingService.bookTicket(bookingRequest.getEventId(), bookingRequest.getTicketType(), bookingRequest.getCustomerName());
-            model.addAttribute("message", "✅ SUKCES: Zarezerwowano bilet " + bookingRequest.getTicketType() + " dla " + bookingRequest.getCustomerName());
+            BigDecimal price = bookingService.bookTicket(bookingRequest.getEventId(), bookingRequest.getTicketType(), bookingRequest.getCustomerName());
+            model.addAttribute("message", "✅ SUKCES: Zarezerwowano bilet " + bookingRequest.getTicketType() + " dla " + bookingRequest.getCustomerName() + ". Do zapłaty: " + price + " PLN.");
         } catch (Exception e) {
             model.addAttribute("message", "❌ BŁĄD: " + e.getMessage());
         }
