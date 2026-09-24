@@ -3,26 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>System Rezerwacji Biletów</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f4f9; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; text-align: center; }
-        .event-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 5px; }
-        .event-title { font-size: 1.2em; font-weight: bold; color: #2c3e50; }
-        .event-date { color: #7f8c8d; }
+        .event-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .event-card:hover {
+            transform: translateX(5px);
+        }
+
+        .event-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .event-date {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Kup Bilet na Koncert</h1>
+<div class="container mt-5">
+    <h1 class="mb-4 text-center" style="color: #2c3e50; font-weight: 700;">🎤 Nadchodzące Koncerty</h1>
 
-    <h2>Dostępne wydarzenia:</h2>
+    <div th:if="${#lists.isEmpty(events)}" class="alert alert-info text-center">
+        Obecnie brak zaplanowanych wydarzeń.
+    </div>
 
-    <div th:each="event : ${events}" class="event-card">
-        <div class="event-title" th:text="${event.name}">Nazwa Wydarzenia</div>
-        <div class="event-date" th:text="'Data: ' + ${#temporals.format(event.eventDate, 'dd-MM-yyyy HH:mm')}">Data</div>
-        <a th:href="@{/book(eventId=${event.id})}" style="display: inline-block; margin-top: 10px; padding: 8px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 4px;">Kup bilet</a>
+    <div th:each="event : ${events}" class="event-card d-flex justify-content-between align-items-center">
+        <div>
+            <div class="event-title" th:text="${event.name}">Nazwa Wydarzenia</div>
+            <div class="event-date">
+                📅 <span th:text="${#temporals.format(event.eventDate, 'dd.MM.yyyy')}">Data</span>
+                ⏰ <span th:text="${#temporals.format(event.eventDate, 'HH:mm')}">Czas</span>
+            </div>
+        </div>
+        <div>
+            <a th:href="@{/book(eventId=${event.id})}" class="btn btn-success px-4 rounded-pill">
+                Kup bilet
+            </a>
+        </div>
     </div>
 </div>
 
